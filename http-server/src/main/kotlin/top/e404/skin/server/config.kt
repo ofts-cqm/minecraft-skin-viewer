@@ -1,11 +1,13 @@
 package top.e404.skin.server
 
 import com.charleskorn.kaml.Yaml
+import io.ktor.client.engine.ProxyBuilder
+import io.ktor.client.engine.ProxyType
+import io.ktor.client.engine.http
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import java.io.File
-import java.net.InetSocketAddress
 
 object ConfigManager {
     private val file = File("config.yml")
@@ -39,8 +41,14 @@ data class Config(
 
 @Serializable
 data class Proxy(
+    val type: ProxyType = ProxyType.HTTP,
     val address: String = "localhost",
     val port: Int = 7890
 ) {
-    val socketAddress get() = InetSocketAddress(address, port)
+    val proxy by lazy {
+        when (type) {
+            ProxyType.SOCKS -> ProxyBuilder.socks(address, port)
+            else -> ProxyBuilder.http("http://$address:$port/")
+        }
+    }
 }

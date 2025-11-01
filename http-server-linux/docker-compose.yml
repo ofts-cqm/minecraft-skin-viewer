@@ -1,0 +1,20 @@
+services:
+  minecraft-skin-viewer:
+    container_name: minecraft-skin-viewer
+    image: 404e/minecraft-skin-viewer:1.4.0
+    environment:
+      DB_URL: jdbc:mysql://172.17.0.1:3306/skin?useSSL=false # 宿主机数据库
+      DB_USER: root
+      DB_PASSWORD: 123456
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_PORT: 80 # 容器内地址
+      PROXY_TYPE: HTTP
+      PROXY_ADDRESS: 172.17.0.1 # 宿主机代理地址
+      PROXY_PORT: 7890
+      START_CMD: "java -Dprism.forceGPU=true -Djdk.gtk.version=3 -jar app.jar"
+    volumes:
+      - ./skin:/app/skin
+      - /dev/null:/app/logs # 禁用日志
+    restart: unless-stopped
+    ports:
+      - "80:80" # 绑定宿主机地址

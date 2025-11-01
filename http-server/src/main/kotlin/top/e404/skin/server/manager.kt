@@ -7,16 +7,15 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import top.e404.skin.server.sql.pojo.SkinData
 import top.e404.skin.server.sql.useSkinMapper
-import java.net.Proxy
 import java.util.*
 
 object Mojang {
-    private const val profileUrl = "https://sessionserver.mojang.com/session/minecraft/profile/"
-    private const val idUrl = "https://api.mojang.com/profiles/minecraft"
+    const val PROFILE_URL = "https://sessionserver.mojang.com/session/minecraft/profile/"
+    const val ID_URL = "https://api.mojang.com/profiles/minecraft"
+    const val TEXTURE_URL = "https://textures.minecraft.net/texture/"
 
     /**
      * 从MojangApi获取玩家皮肤数据
@@ -27,7 +26,7 @@ object Mojang {
      * @return 皮肤数据
      */
     suspend fun getById(uuid: String): SkinData? {
-        val json = client.get("${profileUrl}$uuid").bodyAsText()
+        val json = client.get("${PROFILE_URL}$uuid").bodyAsText()
         if (json.isBlank()) return null
         val jo = json.let { Json.parseToJsonElement(it) }.jsonObject
         val skinJson = jo["properties"]!!
@@ -66,7 +65,7 @@ object Mojang {
      * @return 玩家uuid, 若不存在此玩家则返回null
      */
     suspend fun getIdByName(name: String): String? {
-        val ja = client.post(idUrl) {
+        val ja = client.post(ID_URL) {
             contentType(ContentType.Application.Json)
             setBody(Json.encodeToString(buildJsonArray { add(JsonPrimitive(name)) }))
         }.bodyAsText().let { Json.parseToJsonElement(it).jsonArray }
@@ -82,7 +81,7 @@ val client = HttpClient(OkHttp) {
             followRedirects(true)
         }
         ConfigManager.config.proxy?.let {
-            proxy = Proxy(Proxy.Type.HTTP, it.socketAddress)
+            proxy = it.proxy
         }
     }
 }

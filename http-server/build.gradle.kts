@@ -12,7 +12,7 @@ repositories {
 dependencies {
     implementation(rootProject)
     // slf4j
-    implementation("org.slf4j:slf4j-api:2.0.7")
+    implementation("org.slf4j:slf4j-api:2.0.17")
     // log4j2
     implementation(log4j("core"))
     implementation(log4j("slf4j2-impl")) {
@@ -27,8 +27,8 @@ dependencies {
     compileOnly("org.jetbrains.skiko:skiko-awt:0.7.90")
 
     // serialization
-    implementation(kotlinx("serialization-core-jvm", "1.6.2"))
-    implementation(kotlinx("serialization-json", "1.6.2"))
+    implementation(kotlinx("serialization-core-jvm", "1.9.0"))
+    implementation(kotlinx("serialization-json", "1.9.0"))
     // kaml
     implementation(kaml)
 
@@ -44,17 +44,15 @@ dependencies {
     implementation(ktor("client-okhttp"))
 
     // coroutines
-    implementation(kotlinx("coroutines-core-jvm", "1.6.4"))
+    implementation(kotlinx("coroutines-core-jvm", "1.10.2"))
 
     // mysql
-    implementation("mysql:mysql-connector-java:8.0.30")
+    implementation("mysql:mysql-connector-java:8.0.33")
     // hikari
     implementation("com.zaxxer:HikariCP:5.0.1")
     // mybatis
     implementation("org.mybatis:mybatis:3.5.11")
-    // ehcache
-    implementation("org.mybatis.caches:mybatis-ehcache:1.2.2")
 
     // test
-    testImplementation(kotlin("test", Versions.kotlin))
+    testImplementation(kotlin("test", Versions.KOTLIN))
 }

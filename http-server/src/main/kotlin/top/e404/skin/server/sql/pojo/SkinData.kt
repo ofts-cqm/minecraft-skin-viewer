@@ -5,6 +5,7 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
+import top.e404.skin.server.Mojang
 import top.e404.skin.server.client
 import java.io.File
 
@@ -18,14 +19,13 @@ data class SkinData(
 ) {
     companion object {
         val cacheDir = File("skin").also { it.mkdir() }
-        private const val url = "https://textures.minecraft.net/texture/"
     }
 
     @Suppress("UNUSED")
     constructor() : this("", "", true, 0L, "")
 
     suspend fun updateSkinFile() {
-        skinFile.writeBytes(client.get("$url$hash").readBytes())
+        skinFile.writeBytes(client.get("${Mojang.TEXTURE_URL}$hash").readBytes())
     }
 
     val skinFile get() = cacheDir.resolve("$uuid.png")

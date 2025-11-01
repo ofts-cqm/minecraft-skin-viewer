@@ -12,8 +12,6 @@
         <setting name="logImpl" value="SLF4J"/>
         <!--自动转换驼峰命名法-->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
-        <!--显式启用全局缓存-->
-        <setting name="cacheEnabled" value="true"/>
     </settings>
 
     <typeAliases>

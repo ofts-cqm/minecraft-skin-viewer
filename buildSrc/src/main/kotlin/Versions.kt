@@ -1,16 +1,16 @@
 object Versions {
-    const val group = "top.e404"
-    const val version = "1.3.2"
-    const val kotlin = "1.9.20"
-    const val javafx = "11.0.2"
-    const val log4j = "2.22.1"
-    const val ktor = "2.3.7"
-    const val kaml = "0.57.0"
-    const val skiko = "0.7.90"
+    const val GROUP = "top.e404"
+    const val VERSION = "1.4.0"
+    const val KOTLIN = "2.2.21"
+    const val JAVAFX = "11.0.2"
+    const val LOG4J = "2.25.2"
+    const val KTOR = "2.3.13"
+    const val KAML = "0.80.1"
+    const val SKIKO = "0.9.30"
 }
 
 fun kotlinx(id: String, version: String) = "org.jetbrains.kotlinx:kotlinx-$id:$version"
-fun javafx(module: String, os: String? = null, version: String = Versions.javafx) = buildString {
+fun javafx(module: String, os: String? = null, version: String = Versions.JAVAFX) = buildString {
     append("org.openjfx:javafx-")
     append(module)
     append(":")
@@ -18,7 +18,7 @@ fun javafx(module: String, os: String? = null, version: String = Versions.javafx
     if (os != null) append(":$os")
 }
 
-fun log4j(module: String, version: String = Versions.log4j) = "org.apache.logging.log4j:log4j-$module:$version"
-fun ktor(module: String, version: String = Versions.ktor) = "io.ktor:ktor-$module:$version"
-fun skiko(module: String, version: String = Versions.skiko) = "org.jetbrains.skiko:skiko-awt-runtime-$module:$version"
-const val kaml = "com.charleskorn.kaml:kaml:${Versions.kaml}"
+fun log4j(module: String, version: String = Versions.LOG4J) = "org.apache.logging.log4j:log4j-$module:$version"
+fun ktor(module: String, version: String = Versions.KTOR) = "io.ktor:ktor-$module:$version"
+fun skiko(module: String, version: String = Versions.SKIKO) = "org.jetbrains.skiko:skiko-awt-runtime-$module:$version"
+const val kaml = "com.charleskorn.kaml:kaml:${Versions.KAML}"

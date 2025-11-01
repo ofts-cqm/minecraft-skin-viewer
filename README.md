@@ -125,4 +125,8 @@ GET http://localhost:2345/data/name/404E
 {"uuid":"22df77dd37b0414b8f1e3c7d2585fc79","name":"404E","slim":true,"update":1683961680455,"hash":"4daa024bc2d35de2b26025051817d04491ad586e5a2ab85f9dad608b009ac7d"}
 ```
 
+## Docker 部署
+
+支持使用 Docker 进行部署, 镜像不包含mysql, [compose部署参考](http-server-linux/docker-compose.yml)
+
 
