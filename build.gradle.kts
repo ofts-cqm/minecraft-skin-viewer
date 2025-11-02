@@ -65,6 +65,14 @@ allprojects {
     }
 
     tasks {
+        runShadow {
+            workingDir = rootDir.resolve("run")
+            doFirst {
+                if (workingDir.isFile) workingDir.delete()
+                workingDir.mkdirs()
+            }
+        }
+
         shadowJar {
             archiveFileName.set("${project.name}.jar")
         }
