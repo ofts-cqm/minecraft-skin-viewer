@@ -3,13 +3,13 @@
 echo 创建db.properties
 cat > db.properties << EOF
 jdbcUrl=$DB_URL
-username=$DB_USER
+username=$DB_USERNAME
 password=$DB_PASSWORD
 EOF
 
 echo 创建config.yml
 cat > config.yml << EOF
-address: "$SERVER_ADDRESS"
+host: "$SERVER_HOST"
 port: $SERVER_PORT
 EOF
 
@@ -17,7 +17,7 @@ if [ -n "$PROXY_TYPE" ]; then
   cat >> config.yml << EOF
 proxy:
   type: $PROXY_TYPE
-  address: $PROXY_ADDRESS
+  host: $PROXY_HOST
   port: $PROXY_PORT
 EOF
 fi

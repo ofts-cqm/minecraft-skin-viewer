@@ -32,7 +32,7 @@ suspend fun main() {
             channel = FileOutputStream(".lock").channel
             lock = channel.tryLock()
         }
-    } catch (t: Throwable) {
+    } catch (_: Throwable) {
         appLog.error("请勿打开多个实例")
         exitProcess(1)
     }
@@ -54,7 +54,7 @@ suspend fun main() {
 
     engine = embeddedServer(
         factory = Netty,
-        host = ConfigManager.config.address,
+        host = ConfigManager.config.host,
         port = ConfigManager.config.port,
         module = Application::module
     )

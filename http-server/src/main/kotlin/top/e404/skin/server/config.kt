@@ -33,7 +33,7 @@ object ConfigManager {
 
 @Serializable
 data class Config(
-    val address: String = "127.0.0.1",
+    val host: String = "127.0.0.1",
     val port: Int = 2345,
     val proxy: Proxy? = null,
     val timeout: Long = 86400
@@ -42,13 +42,13 @@ data class Config(
 @Serializable
 data class Proxy(
     val type: ProxyType = ProxyType.HTTP,
-    val address: String = "localhost",
+    val host: String = "localhost",
     val port: Int = 7890
 ) {
     val proxy by lazy {
         when (type) {
-            ProxyType.SOCKS -> ProxyBuilder.socks(address, port)
-            else -> ProxyBuilder.http("http://$address:$port/")
+            ProxyType.SOCKS -> ProxyBuilder.socks(host, port)
+            else -> ProxyBuilder.http("http://$host:$port/")
         }
     }
 }
