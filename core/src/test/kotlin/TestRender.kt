@@ -27,12 +27,12 @@ class TestRender {
     fun renderFile(file: File, isSlim: Boolean, width: Int, height: Int, wavingPose: Map<BodyPart, List<Transformation>> = emptyMap()): Image {
         val camera = OrbitCamera(
             target = Vec3(0f, 12f, 0f),
-            azimuthDegrees = -30f,
-            elevationDegrees = 0f,
+            azimuthDegrees = -20f,
+            elevationDegrees = 30f,
             distance = 60f
         )
         val skin = Image.makeFromEncoded(file.readBytes())
-        return renderMinecraftView(skin, isSlim, width, height, backgroundColor, camera, wavingPose)
+        return renderMinecraftView(skin, isSlim, width, height, backgroundColor, camera, wavingPose, true)
     }
 
     @Test
