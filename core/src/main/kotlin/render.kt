@@ -11,39 +11,88 @@ import org.jetbrains.skia.Rect
 import top.e404.skiko.draw.render3d.*
 import top.e404.skiko.frame.Frame
 import top.e404.skiko.frame.encodeToBytes
-import top.e404.skiko.gif.GIFBuilder
-import top.e404.skiko.gif.gif
 import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- * 新增：用于表示身体部件在X, Y, Z轴上的旋转角度（单位：度）
+ * 封装所有可能的变换操作
  */
-data class PartRotation(val x: Float = 0f, val y: Float = 0f, val z: Float = 0f)
+sealed class Transformation {
+    /**
+     * 旋转操作
+     * @param x 绕X轴旋转的角度
+     * @param y 绕Y轴旋转的角度
+     * @param z 绕Z轴旋转的角度
+     */
+    data class Rotate(val x: Float = 0f, val y: Float = 0f, val z: Float = 0f) : Transformation()
+
+    /**
+     * 缩放操作
+     * @param x X轴的缩放比例
+     * @param y Y轴的缩放比例
+     * @param z Z轴的缩放比例
+     */
+    data class Scale(val x: Float = 1f, val y: Float = 1f, val z: Float = 1f) : Transformation()
+
+    /**
+     * 平移操作
+     * @param x X轴的平移量
+     * @param y Y轴的平移量
+     * @param z Z轴的平移量
+     */
+    data class Translate(val x: Float = 0f, val y: Float = 0f, val z: Float = 0f) : Transformation()
+}
 
 object PosePresets {
     val WALKING = mapOf(
-        BodyPart.RIGHT_ARM to PartRotation(x = -30f, z = 0f),
-        BodyPart.LEFT_ARM to PartRotation(x = 30f, z = 0f),
-        BodyPart.RIGHT_LEG to PartRotation(x = 30f, z = 0f),
-        BodyPart.LEFT_LEG to PartRotation(x = -30f, z = 0f),
+        BodyPart.RIGHT_ARM to listOf(Transformation.Rotate(x = -30f)),
+        BodyPart.LEFT_ARM to listOf(Transformation.Rotate(x = 30f)),
+        BodyPart.RIGHT_LEG to listOf(Transformation.Rotate(x = 30f)),
+        BodyPart.LEFT_LEG to listOf(Transformation.Rotate(x = -30f)),
     )
     val SIT = mapOf(
-        BodyPart.RIGHT_ARM to PartRotation(x = -30f, z = 0f),
-        BodyPart.LEFT_ARM to PartRotation(x = -30f, z = 0f),
-        BodyPart.RIGHT_LEG to PartRotation(x = -80f, z = -20f),
-        BodyPart.LEFT_LEG to PartRotation(x = -80f, z = 20f),
+        BodyPart.RIGHT_ARM to listOf(Transformation.Rotate(x = -30f)),
+        BodyPart.LEFT_ARM to listOf(Transformation.Rotate(x = -30f)),
+        BodyPart.RIGHT_LEG to listOf(Transformation.Rotate(x = -80f, z = -20f)),
+        BodyPart.LEFT_LEG to listOf(Transformation.Rotate(x = -80f, z = 20f)),
     )
     val HOMO = mapOf(
-        BodyPart.HEAD to PartRotation(y = -30f),
-        BodyPart.RIGHT_ARM to PartRotation(x = -30f, z = 0f),
-        BodyPart.LEFT_ARM to PartRotation(x = -30f, z = 0f),
-        BodyPart.RIGHT_LEG to PartRotation(x = -80f, z = -20f),
-        BodyPart.LEFT_LEG to PartRotation(x = -80f, z = 20f),
+        BodyPart.HEAD to listOf(Transformation.Rotate(y = -30f)),
+        BodyPart.RIGHT_ARM to listOf(Transformation.Rotate(x = -30f)),
+        BodyPart.LEFT_ARM to listOf(Transformation.Rotate(x = -30f)),
+        BodyPart.RIGHT_LEG to listOf(Transformation.Rotate(x = -80f, z = -20f)),
+        BodyPart.LEFT_LEG to listOf(Transformation.Rotate(x = -80f, z = 20f)),
+    )
+    fun withScale(headScale: Float = 1f, laScale: Float = 1f, raScale: Float = 1f, llScale: Float = 1f, rlScale: Float = 1f, ) = mapOf(
+        BodyPart.HEAD to listOf(
+            Transformation.Rotate(y = -30f),
+            Transformation.Scale(headScale, headScale, headScale),
+            Transformation.Translate(y = BodyPart.HEAD.getDims(false).y.let { it * (headScale - 1) / 2 }),
+        ),
+        BodyPart.RIGHT_ARM to listOf(
+            Transformation.Rotate(x = -30f),
+            Transformation.Scale(raScale, raScale, raScale),
+            Transformation.Translate(x = -BodyPart.LEFT_ARM.getDims(false).x.let { it * (raScale - 1) / 2 }),
+        ),
+        BodyPart.LEFT_ARM to listOf(
+            Transformation.Rotate(x = -30f),
+            Transformation.Scale(laScale, laScale, laScale),
+            Transformation.Translate(x = BodyPart.LEFT_ARM.getDims(false).x.let { it * (laScale - 1) / 2 }),
+        ),
+        BodyPart.RIGHT_LEG to listOf(
+            Transformation.Rotate(x = -80f, z = -20f),
+            Transformation.Scale(rlScale, rlScale, rlScale),
+            Transformation.Translate(y = -BodyPart.LEFT_LEG.getDims(false).y.let { it * (rlScale - 1) / 2 }),
+        ),
+        BodyPart.LEFT_LEG to listOf(
+            Transformation.Rotate(x = -80f, z = 20f),
+            Transformation.Scale(llScale, llScale, llScale),
+            Transformation.Translate(y = -BodyPart.LEFT_LEG.getDims(false).y.let { it * (llScale - 1) / 2 }),
+        ),
     )
 }
 
-// region 新增：为Vec3添加旋转的扩展函数
+// region 扩展函数
 private fun Vec3.rotateX(angle: Float): Vec3 {
     val cos = cos(angle)
     val sin = sin(angle)
@@ -65,13 +114,20 @@ private fun Vec3.rotateZ(angle: Float): Vec3 {
 /**
  * 按照 Z -> Y -> X 的顺序旋转向量
  */
-private fun Vec3.rotate(rotation: PartRotation): Vec3 {
+private fun Vec3.rotate(rotation: Transformation.Rotate): Vec3 {
     val radX = Math.toRadians(rotation.x.toDouble()).toFloat()
     val radY = Math.toRadians(rotation.y.toDouble()).toFloat()
     val radZ = Math.toRadians(rotation.z.toDouble()).toFloat()
     return this.rotateZ(radZ).rotateY(radY).rotateX(radX)
 }
-// endregion
+
+private fun Vec3.scale(scaling: Transformation.Scale): Vec3 {
+    return Vec3(x * scaling.x, y * scaling.y, z * scaling.z)
+}
+
+private fun Vec3.translate(translation: Transformation.Translate): Vec3 {
+    return this.plus(Vec3(translation.x, translation.y, translation.z))
+}
 
 /**
  * 将Minecraft模型所有复杂的、硬编码的数据（尺寸、位置、UV坐标）封装起来
@@ -256,43 +312,49 @@ enum class BodyPart {
     abstract fun getOverlayUVs(isSlim: Boolean): Map<FaceDirection, Rect>?
 
     /**
-     * 新增：获取身体部件的旋转轴心点（局部坐标系，即相对于部件几何中心）
+     * 获取身体部件的旋转轴心点（局部坐标系，即相对于部件几何中心）
      */
     abstract fun getPivot(isSlim: Boolean): Vec3
 }
 
 /**
  * 根据皮肤贴图和模型类型（标准/Slim）创建完整的Minecraft玩家模型。
- * @param rotations 一个映射，定义了特定身体部件的旋转
+ * @param pose 一个映射，定义了特定身体部件的一系列有序变换
  */
 internal fun createMinecraftPlayer(
     skin: Bitmap,
     isSlim: Boolean,
-    rotations: Map<BodyPart, PartRotation> = emptyMap()
+    pose: Map<BodyPart, List<Transformation>> = emptyMap()
 ): Mesh {
     val texW = skin.width.toFloat()
     val texH = skin.height.toFloat()
     val componentMeshes = mutableListOf<Mesh>()
-    // 外层皮肤的膨胀量
     val overlayAmount = 0.5f
-    val headOverlayAmount = 1f // 头部外层膨胀量稍大
+    val headOverlayAmount = 1f
 
-    // 遍历所有身体部件
     for (part in BodyPart.entries) {
         val dims = part.getDims(isSlim)
         val pos = part.getPos(isSlim)
         val baseUVs = part.getBaseUVs(isSlim)
         val overlayUVs = part.getOverlayUVs(isSlim)
-        val rotation = rotations[part]
         val pivot = part.getPivot(isSlim)
+        val transformations = pose[part]
 
-        // 定义一个统一的变换函数，用于处理旋转
+        // 定义统一的变换函数
         val transform: (Vec3) -> Vec3 = { vertexPos ->
-            if (rotation != null) {
-                // 旋转逻辑：1.移动到轴心点 2.旋转 3.移回原位
-                (vertexPos - pivot).rotate(rotation) + pivot
+            if (transformations.isNullOrEmpty()) {
+                vertexPos // 如果没有变换，直接返回原坐标
             } else {
-                vertexPos
+                // 使用 fold 依次应用变换链中的每一个操作
+                transformations.fold(vertexPos) { currentPos, transformation ->
+                    when (transformation) {
+                        // 旋转和缩放是围绕轴心点进行的
+                        is Transformation.Rotate -> (currentPos - pivot).rotate(transformation) + pivot
+                        is Transformation.Scale -> (currentPos - pivot).scale(transformation) + pivot
+                        // 平移是绝对的
+                        is Transformation.Translate -> currentPos.translate(transformation)
+                    }
+                }
             }
         }
 
@@ -302,22 +364,15 @@ internal fun createMinecraftPlayer(
             Vertex(transform(it.position) + pos, it.uv)
         }, baseCuboid.faces))
 
-        // 如果有外层定义，则创建并添加外层
+        // 创建并添加外层
         overlayUVs?.let { uvs ->
             val overlaySize = if (part == BodyPart.HEAD) headOverlayAmount else overlayAmount
-            // 外层的尺寸比基础层稍大
             val overlayCuboid = createUVCuboid(dims + Vec3(overlaySize, overlaySize, overlaySize), uvs, texW, texH)
-            componentMeshes.add(
-                Mesh(
-                    overlayCuboid.vertices.map {
-                        Vertex(transform(it.position) + pos, it.uv)
-                    },
-                    overlayCuboid.faces
-                )
-            )
+            componentMeshes.add(Mesh(overlayCuboid.vertices.map {
+                Vertex(transform(it.position) + pos, it.uv)
+            }, overlayCuboid.faces))
         }
     }
-    // 将所有部件的Mesh合并成一个，并附上皮肤纹理
     return combineMeshes(componentMeshes, skin)
 }
 
@@ -328,8 +383,7 @@ internal fun createMinecraftPlayer(
  * @param isSlim 是否为Slim模型
  * @param backgroundColor 背景颜色
  * @param camera 相机参数
- * @param rotations 新增：一个映射，定义了特定身体部件的旋转
- * @return 渲染后的图像
+ * @param pose 一个映射，定义了特定身体部件的一系列有序变换
  */
 fun renderMinecraftView(
     skin: Image,
@@ -338,29 +392,20 @@ fun renderMinecraftView(
     height: Int,
     backgroundColor: Int,
     camera: OrbitCamera,
-    rotations: Map<BodyPart, PartRotation> = emptyMap()
+    pose: Map<BodyPart, List<Transformation>> = emptyMap()
 ): Image {
     val skinBitmap = Bitmap.makeFromImage(skin)
-    val playerMesh = createMinecraftPlayer(skinBitmap, isSlim, rotations)
+    val playerMesh = createMinecraftPlayer(skinBitmap, isSlim, pose)
     val (viewMatrix, eyePosition) = createViewMatrix(camera)
     val cameraForward = (camera.target - eyePosition).normalized()
     return renderToImage(
-        playerMesh,
-        width,
-        height,
-        viewMatrix,
-        cameraForward,
-        camera.distance,
-        true,
-        true,
-        backgroundColor,
-        useBackFaceCulling = false
+        playerMesh, width, height, viewMatrix, cameraForward, camera.distance,
+        true, true, backgroundColor, useBackFaceCulling = false
     )
 }
 
 /**
  * 渲染旋转动画的函数
- *
  * @param skin 皮肤图片
  * @param isSlim 是否为Slim模型
  * @param width 画布宽度
@@ -369,7 +414,7 @@ fun renderMinecraftView(
  * @param camera 相机参数
  * @param frameCount 帧数
  * @param rotations 新增：一个映射，定义了特定身体部件的旋转，模型将以这个姿势进行旋转
- * @return 渲染后的图像二进制数据
+ * @param pose 一个映射，定义了特定身体部件的一系列有序变换，模型将以这个姿势进行旋转
  */
 suspend fun renderRotate(
     skin: Image,
@@ -380,13 +425,12 @@ suspend fun renderRotate(
     camera: OrbitCamera,
     frameCount: Int,
     frameDuration: Int,
-    rotations: Map<BodyPart, PartRotation> = emptyMap()
+    pose: Map<BodyPart, List<Transformation>> = emptyMap()
 ): ByteArray {
     val unitAngel = 360f / frameCount
     val skinBitmap = Bitmap.makeFromImage(skin)
-    val playerMesh = createMinecraftPlayer(skinBitmap, isSlim, rotations)
+    val playerMesh = createMinecraftPlayer(skinBitmap, isSlim, pose)
     return coroutineScope {
-        // 绘图是cpu密集型操作
         withContext(Dispatchers.Default) {
             (0 until frameCount).map { i ->
                 async {
@@ -395,21 +439,11 @@ suspend fun renderRotate(
                     val (viewMatrix, eyePosition) = createViewMatrix(rotatedCamera)
                     val cameraForward = (rotatedCamera.target - eyePosition).normalized()
                     renderToImage(
-                        playerMesh,
-                        width,
-                        height,
-                        viewMatrix,
-                        cameraForward,
-                        rotatedCamera.distance,
-                        true,
-                        true,
-                        backgroundColor,
-                        useBackFaceCulling = false
-                    ).let {
-                        Frame(frameDuration, it)
-                    }
+                        playerMesh, width, height, viewMatrix, cameraForward, rotatedCamera.distance,
+                        true, true, backgroundColor, useBackFaceCulling = false
+                    ).let { Frame(frameDuration, it) }
                 }
             }.awaitAll()
-        }.encodeToBytes() // 编码是IO密集
+        }.encodeToBytes()
     }
 }

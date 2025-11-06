@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test
 import top.e404.skiko.draw.render3d.OrbitCamera
 import top.e404.skiko.draw.render3d.Vec3
 import top.e404.skin.core.BodyPart
-import top.e404.skin.core.PartRotation
 import top.e404.skin.core.PosePresets
+import top.e404.skin.core.Transformation
 import top.e404.skin.core.renderMinecraftView
 import top.e404.skin.core.renderRotate
 import java.io.File
@@ -24,9 +24,13 @@ class TestRender {
     /**
      * 运行Minecraft皮肤渲染示例的函数。
      */
-    fun renderFile(file: File, isSlim: Boolean, width: Int, height: Int, wavingPose: Map<BodyPart, PartRotation> = emptyMap()): Image {
-        val camera =
-            OrbitCamera(target = Vec3(0f, 12f, 0f), azimuthDegrees = -30f, elevationDegrees = 0f, distance = 60f)
+    fun renderFile(file: File, isSlim: Boolean, width: Int, height: Int, wavingPose: Map<BodyPart, List<Transformation>> = emptyMap()): Image {
+        val camera = OrbitCamera(
+            target = Vec3(0f, 12f, 0f),
+            azimuthDegrees = -30f,
+            elevationDegrees = 0f,
+            distance = 60f
+        )
         val skin = Image.makeFromEncoded(file.readBytes())
         return renderMinecraftView(skin, isSlim, width, height, backgroundColor, camera, wavingPose)
     }
@@ -42,8 +46,8 @@ class TestRender {
 
     @Test
     fun test_render_pos() {
-        val walkingPose = PosePresets.HOMO
-        val posName = "homo"
+        val walkingPose = PosePresets.withScale(1.5f)
+        val posName = "test"
         for ((fileName, isSlim) in files) {
             renderFile(File(fileName), isSlim, 800, 1200, walkingPose).encodeToData()!!.let { data ->
                 File("${posName}_rendered_$fileName").writeBytes(data.bytes)
