@@ -1,5 +1,6 @@
 rootProject.name = "minecraft-skin-viewer"
 include(
+    "core",
     "http-server",
     "http-server-win",
     "http-server-linux",

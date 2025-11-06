@@ -3,12 +3,6 @@ plugins {
     kotlin("plugin.serialization")
 }
 
-repositories {
-    mavenCentral()
-    // sonatype
-    maven("https://s01.oss.sonatype.org/content/groups/public/")
-}
-
 dependencies {
     implementation(rootProject)
     // slf4j
@@ -20,11 +14,6 @@ dependencies {
     }
     // 异步
     implementation("com.lmax:disruptor:3.4.4")
-
-    // gif
-    implementation("top.e404:skiko-util-gif-codec:1.1.1")
-    // skiko
-    compileOnly("org.jetbrains.skiko:skiko-awt:0.7.90")
 
     // serialization
     implementation(kotlinx("serialization-core-jvm", "1.9.0"))

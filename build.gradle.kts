@@ -9,17 +9,6 @@ kotlin {
     jvmToolchain(11)
 }
 
-dependencies {
-    // slf4j
-    implementation("org.slf4j:slf4j-api:2.0.17")
-    // jfx
-    api(javafx("controls", "win"))
-    api(javafx("graphics", "win"))
-    api(javafx("base", "win"))
-    // test
-    testImplementation(kotlin("test", Versions.KOTLIN))
-}
-
 allprojects {
     apply(plugin = "org.gradle.maven-publish")
     apply(plugin = "org.gradle.java-library")
@@ -31,16 +20,26 @@ allprojects {
     version = Versions.VERSION
 
     repositories {
+        maven("https://nexus.e404.top:3443/repository/maven-snapshots/")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         mavenCentral()
     }
 
     dependencies {
+        // slf4j
+        implementation("org.slf4j:slf4j-api:2.0.17")
+        // skiko-util
+        implementation("top.e404.skiko-util:skiko-util-draw:1.9.3-SNAPSHOT")
+        implementation("top.e404.skiko-util:skiko-util-gif-codec:1.9.3-SNAPSHOT")
+        // coroutines
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+        // test
+        testImplementation(kotlin("test", Versions.KOTLIN))
+
         if (!name.startsWith("http-server-")) return@dependencies
         val os = name.removePrefix("http-server-")
         // impl
-        implementation(project(":http-server")) {
-            exclude("org.openjfx")
-        }
+        implementation(project(":http-server"))
         // skiko
         implementation(skiko(
             when (os) {
@@ -49,10 +48,6 @@ allprojects {
                 else -> "linux-x64"
             }
         ))
-        // javafx
-        implementation(javafx("controls", os))
-        implementation(javafx("graphics", os))
-        implementation(javafx("base", os))
     }
 
     application {
@@ -84,7 +79,6 @@ allprojects {
         }
 
         test {
-            enabled = false
             useJUnitPlatform()
             workingDir = rootDir.resolve("run")
         }
