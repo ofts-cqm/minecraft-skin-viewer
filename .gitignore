@@ -5,3 +5,8 @@ build
 run
 jar
 /*/build
+.lock
+*.gz
+latest.log
+config.yml
+*/*.png

@@ -12,8 +12,8 @@ import top.e404.skin.jfx.runTask
 import top.e404.skin.jfx.snapshot
 
 object HomoView {
-    private const val w = 1024.0
-    private const val h = 768.0
+    private const val w = 500.0
+    private const val h = 889.0
     private val lock = Object()
     lateinit var pane: AnchorPane
     lateinit var stage: Stage
@@ -21,7 +21,7 @@ object HomoView {
     fun load() {
         val bgImage = this::class.java
             .classLoader
-            .getResourceAsStream("homo.png")
+            .getResourceAsStream("home.jpg")
             .use { Image(it) }
         val bg = ImageView(bgImage)
         pane = AnchorPane()

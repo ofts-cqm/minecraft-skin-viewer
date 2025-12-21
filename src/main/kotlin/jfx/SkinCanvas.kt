@@ -136,10 +136,11 @@ class SkinCanvas(
         xRotate.angle = .0
         yRotate.angle = 30.0
         zRotate.angle = .0
-        translate.x += 5
+        translate.x += 3
+        translate.y -= 10
         scale.apply {
-            x = 0.9
-            y = 0.9
+            x = 2.0
+            y = 2.0
         }
         head.apply {
             transforms.add(Rotate(30.0, Rotate.Y_AXIS))
