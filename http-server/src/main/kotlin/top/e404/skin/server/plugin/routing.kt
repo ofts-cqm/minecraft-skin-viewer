@@ -2,6 +2,7 @@ package top.e404.skin.server.plugin
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.http.content.staticResources
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import javafx.scene.paint.Color
@@ -185,5 +186,9 @@ fun Application.routing() = routing {
             drawImage(layer2.resize(-800 * scale, -800 * scale, true), margin.toFloat(), margin.toFloat())
         }
         call.respondBytes(result.bytes(format = EncodedImageFormat.PNG), ContentType.Image.PNG)
+    }
+
+    staticResources("/", "public") {
+        default("index.html")
     }
 }
