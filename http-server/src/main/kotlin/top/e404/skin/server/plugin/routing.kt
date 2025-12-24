@@ -3,19 +3,26 @@ package top.e404.skin.server.plugin
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.staticResources
+import io.ktor.server.plugins.origin
+import io.ktor.server.request.path
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import javafx.scene.paint.Color
 import org.jetbrains.skia.*
+import org.slf4j.LoggerFactory
 import top.e404.skiko.gif.gif
 import top.e404.skiko.util.*
 import top.e404.skin.jfx.view.HeadView
 import top.e404.skin.jfx.view.HomoView
 import top.e404.skin.jfx.view.SkinView
 import top.e404.skin.jfx.view.SneakView
+import top.e404.skin.server.ConfigManager
+import top.e404.skin.server.RateLimiter
 import top.e404.skin.server.Skin
 
 private val defaultBgColor = Color.web("#1F1B1D")
+private val logger = LoggerFactory.getLogger("Router")!!
+private val rateLimiter = RateLimiter(ConfigManager.config.minInterval, ConfigManager.config.cleanEntry, ConfigManager.config.cleanCutoff)
 
 fun Application.routing() = routing {
     get("/render/{type}/{content}/{position}") {
@@ -191,4 +198,16 @@ fun Application.routing() = routing {
     staticResources("/", "public") {
         default("index.html")
     }
+
+    intercept(ApplicationCallPipeline.Plugins) {
+        if (call.request.path().startsWith("/render/")) {
+            logger.info("request received")
+            if (!rateLimiter.allow(call.request.origin.remoteAddress)) {
+                logger.info("request invalid")
+                call.respond(HttpStatusCode.TooManyRequests)
+                finish()
+            }
+        }
+    }
+
 }
