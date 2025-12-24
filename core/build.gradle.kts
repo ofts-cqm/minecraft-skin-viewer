@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow")
+    id("org.openjfx.javafxplugin") version "0.1.0"
     application
 }
 

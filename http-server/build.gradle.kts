@@ -1,7 +1,27 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
+    id("org.openjfx.javafxplugin") version "0.1.0"
 }
+
+// Source - https://stackoverflow.com/a
+// Posted by Slaw, modified by community. See post 'Timeline' for change history
+// Retrieved 2025-12-20, License - CC BY-SA 4.0
+
+javafx {
+    // will pull in transitive modules
+    modules("javafx.controls", "javafx.fxml") // replace with what you modules need
+
+    // another option is to use:
+    // modules = listOf("javafx.controls", "javafx.fxml")
+
+    version = "12.0.1" // or whatever version you're using
+}
+
+repositories {
+    mavenCentral() // I believe jcenter() should work as well
+}
+
 
 dependencies {
     implementation(rootProject)
