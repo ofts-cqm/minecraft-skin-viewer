@@ -48,7 +48,7 @@ class SkinCanvas(
     private val rLegInner = SkinCube(4, 12, 4, zoom, 0, 16, skin)
     private val rLegOuter = SkinCube(4, 12, 4, outerZoom, 0, 32, skin)
 
-    private val head = SkinGroup(
+    val head = SkinGroup(
         Rotate(0.0, 0.0, headInner.height / 2.0, 0.0, Rotate.X_AXIS),
         Rotate(0.0, Rotate.Y_AXIS),
         Rotate(0.0, 0.0, headInner.height / 2.0, 0.0, Rotate.Z_AXIS),
@@ -60,31 +60,31 @@ class SkinCanvas(
             it.scaleZ *= headScale
         }
     }
-    private val body = SkinGroup(
+    val body = SkinGroup(
         Rotate(0.0, Rotate.X_AXIS),
         Rotate(0.0, Rotate.Y_AXIS),
         Rotate(0.0, Rotate.Z_AXIS),
         bodyInner, bodyOuter
     )
-    private val lArm = SkinGroup(
+    val lArm = SkinGroup(
         Rotate(0.0, 0.0, -lArmInner.height / 2.0, 0.0, Rotate.X_AXIS),
         Rotate(0.0, Rotate.Y_AXIS),
         Rotate(0.0, +lArmInner.width / 2.0, -lArmInner.height / 2.0, 0.0, Rotate.Z_AXIS),
         lArmInner, lArmOuter
     )
-    private val rArm = SkinGroup(
+    val rArm = SkinGroup(
         Rotate(0.0, 0.0, -rArmInner.height / 2.0, 0.0, Rotate.X_AXIS),
         Rotate(0.0, Rotate.Y_AXIS),
         Rotate(0.0, -rArmInner.width / 2.0, -rArmInner.height / 2.0, 0.0, Rotate.Z_AXIS),
         rArmInner, rArmOuter
     )
-    private val lLeg = SkinGroup(
+    val lLeg = SkinGroup(
         Rotate(0.0, 0.0, -lLegInner.height / 2.0, 0.0, Rotate.X_AXIS),
         Rotate(0.0, Rotate.Y_AXIS),
         Rotate(0.0, 0.0, -lLegInner.height / 2.0, 0.0, Rotate.Z_AXIS),
         lLegInner, lLegOuter
     )
-    private val rLeg = SkinGroup(
+    val rLeg = SkinGroup(
         Rotate(0.0, 0.0, -rLegInner.height / 2.0, 0.0, Rotate.X_AXIS),
         Rotate(0.0, Rotate.Y_AXIS),
         Rotate(0.0, 0.0, -rLegInner.height / 2.0, 0.0, Rotate.Z_AXIS),
@@ -171,6 +171,25 @@ class SkinCanvas(
             translateZ -= lLegInner.height / 2
             translateY -= lLegInner.height / 2.7
         }
+    }
+
+    fun hipWave(left: Rotate, right:Rotate, bodyShift: Translate){
+        lLeg.transforms.add(left)
+        lLeg.translateY -= 0.6
+        rLeg.transforms.add(right)
+        rLeg.translateY -= 0.6
+        yRotate.angle = 10.0
+        body.translateZ -= 0.5
+
+        head.transforms.add(bodyShift)
+        body.transforms.add(bodyShift)
+        lArm.transforms.add(bodyShift)
+        rArm.transforms.add(bodyShift)
+
+        lArm.transforms.add(Rotate(-10.0, Rotate.Z_AXIS))
+        lArm.transforms.add(Translate(0.75, 0.0))
+        rArm.transforms.add(Rotate(10.0, Rotate.Z_AXIS))
+        rArm.transforms.add(Translate(-0.75, 0.0))
     }
 
     fun sneak() {

@@ -12,7 +12,9 @@ import org.jetbrains.skia.*
 import org.slf4j.LoggerFactory
 import top.e404.skiko.gif.gif
 import top.e404.skiko.util.*
+import top.e404.skin.jfx.CanvasArgs
 import top.e404.skin.jfx.view.HeadView
+import top.e404.skin.jfx.view.HipView
 import top.e404.skin.jfx.view.HomoView
 import top.e404.skin.jfx.view.SkinView
 import top.e404.skin.jfx.view.SneakView
@@ -43,9 +45,17 @@ fun Application.routing() = routing {
         val parameters = call.request.queryParameters
         val bg = parameters["bg"]?.runCatching { Color.web(this) }?.getOrNull() ?: defaultBgColor
         val light = parameters["light"]?.let { Color.web(it) }
+        val slim = parameters["t"]?.toBoolean() ?: data.slim
+        val frameCount = parameters["x"]?.toIntOrNull() ?: 20
+        val pitch = parameters["y"]?.toIntOrNull() ?: 20
+        val head = parameters["head"]?.toDoubleOrNull() ?: 1.0
+        val d = (parameters["duration"]?.toIntOrNull() ?: 40).coerceAtLeast(20)
+
+        val args = CanvasArgs(skinBytes, slim, bg, frameCount, pitch, light, head)
+
         when (call.parameters["position"]!!.lowercase()) {
             "sneak" -> {
-                val slim = parameters["t"]?.toBoolean() ?: data.slim
+
                 val (first, second) = SneakView.getSneak(
                     skinBytes,
                     slim,
@@ -132,6 +142,21 @@ fun Application.routing() = routing {
             "homo" -> {
                 val bytes = HomoView.getHomo(skinBytes, data.slim, light, parameters["head"]?.toDoubleOrNull() ?: 1.0)
                 call.respondBytes(bytes, ContentType.Image.PNG)
+            }
+
+            "hip" -> {
+                val bytes = HipView.getHipShake(args).let { frames ->
+                    gif(600, 900) {
+                        options {
+                            disposalMethod = AnimationDisposalMode.RESTORE_BG_COLOR
+                            alphaType = ColorAlphaType.OPAQUE
+                        }
+                        frames.forEach {
+                            frame(Bitmap.makeFromImage(Image.makeFromEncoded(it))) { duration = d }
+                        }
+                    }.bytes
+                }
+                call.respondBytes(bytes, ContentType.Image.GIF)
             }
 
             else -> call.respond(HttpStatusCode.NotFound)
