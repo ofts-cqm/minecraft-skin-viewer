@@ -145,7 +145,7 @@ fun Application.routing() = routing {
             }
 
             "hip" -> {
-                val bytes = asGIF(HipView.getHipShake(args), HipView.IMA, 900, d)
+                val bytes = asGIF(HipView.getHipShake(args), HipView.imageWidth.toInt(), HipView.imageHeight.toInt(), d)
                 call.respondBytes(bytes, ContentType.Image.GIF)
             }
 
