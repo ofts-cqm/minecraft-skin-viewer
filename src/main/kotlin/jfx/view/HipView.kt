@@ -1,40 +1,21 @@
 package top.e404.skin.jfx.view
 
-import javafx.scene.Scene
 import javafx.scene.image.Image
-import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.transform.Rotate
 import javafx.scene.transform.Translate
-import javafx.stage.Stage
 import top.e404.skin.jfx.CanvasArgs
 import top.e404.skin.jfx.SkinCanvas
 import top.e404.skin.jfx.png
 import top.e404.skin.jfx.runTask
 import top.e404.skin.jfx.snapshot
-import kotlin.math.PI
 import kotlin.math.sin
 
-object HipView {
-    private const val IMAGE_WIDTH = 600.0
-    private const val IMAGE_HEIGHT = 900.0
-    private const val u = PI / 180
-    private val lock = Object()
-    private val pane = StackPane()
-    lateinit var stage: Stage
-
-    fun load() {
-        stage = Stage().apply {
-            scene = Scene(pane, IMAGE_WIDTH, IMAGE_HEIGHT)
-            isResizable = false
-        }
-    }
-
-    private lateinit var canvas: SkinCanvas
+object HipView: AbstractView<SkinCanvas>(600.0, 900.0) {
     private fun update(image: Image, slim: Boolean, light: Color?, head: Double) {
         pane.children.apply {
             clear()
-            canvas = SkinCanvas(image, slim, IMAGE_WIDTH, IMAGE_HEIGHT, light, head)
+            canvas = SkinCanvas(image, slim, imageWidth, imageHeight, light, head)
             add(canvas)
         }
     }

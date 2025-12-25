@@ -11,13 +11,13 @@ import javafx.scene.paint.Color
 import org.jetbrains.skia.*
 import org.slf4j.LoggerFactory
 import top.e404.skiko.gif.gif
-import top.e404.skiko.util.*
 import top.e404.skin.jfx.CanvasArgs
 import top.e404.skin.jfx.view.HeadView
 import top.e404.skin.jfx.view.HipView
 import top.e404.skin.jfx.view.HomoView
 import top.e404.skin.jfx.view.SkinView
 import top.e404.skin.jfx.view.SneakView
+import top.e404.skin.jfx.view.asGIF
 import top.e404.skin.server.ConfigManager
 import top.e404.skin.server.RateLimiter
 import top.e404.skin.server.Skin
@@ -145,17 +145,7 @@ fun Application.routing() = routing {
             }
 
             "hip" -> {
-                val bytes = HipView.getHipShake(args).let { frames ->
-                    gif(600, 900) {
-                        options {
-                            disposalMethod = AnimationDisposalMode.RESTORE_BG_COLOR
-                            alphaType = ColorAlphaType.OPAQUE
-                        }
-                        frames.forEach {
-                            frame(Bitmap.makeFromImage(Image.makeFromEncoded(it))) { duration = d }
-                        }
-                    }.bytes
-                }
+                val bytes = asGIF(HipView.getHipShake(args), HipView.IMA, 900, d)
                 call.respondBytes(bytes, ContentType.Image.GIF)
             }
 
@@ -173,51 +163,6 @@ fun Application.routing() = routing {
             }
         }
         call.respond(if (success) HttpStatusCode.OK else HttpStatusCode.NotFound)
-    }
-
-    get("/data/{type}/{content}") {
-        val data = when (call.parameters["type"]!!.lowercase()) {
-            "id" -> Skin.getById(call.parameters["content"]!!)
-            "name" -> Skin.getByName(call.parameters["content"]!!)
-            else -> {
-                call.respond(HttpStatusCode.BadRequest, "type must be 'id' or 'name'")
-                return@get
-            }
-        }
-        if (data == null) {
-            call.respond(HttpStatusCode.NotFound)
-            return@get
-        }
-        call.respond(data)
-    }
-
-    get("/face/{type}/{content}") {
-        val data = when (call.parameters["type"]!!.lowercase()) {
-            "id" -> Skin.getById(call.parameters["content"]!!)
-            "name" -> Skin.getByName(call.parameters["content"]!!)
-            else -> {
-                call.respond(HttpStatusCode.BadRequest, "type must be 'id' or 'name'")
-                return@get
-            }
-        }
-        if (data == null) {
-            call.respond(HttpStatusCode.NotFound)
-            return@get
-        }
-        val image = Image.makeFromEncoded(data.skinBytes)
-        val layer1 = image.sub(8, 8, 8, 8)
-        val layer2 = image.sub(40, 8, 8, 8)
-        val parameters = call.request.queryParameters
-        val bg = parameters["bg"]?.asColor() ?: 0
-        val scale = parameters["scale"]?.toIntOrNull() ?: 5
-        val margin = parameters["margin"]?.toIntOrNull() ?: 40
-        val size = 64 * scale + 2 * margin
-        val result = Surface.makeRasterN32Premul(size, size).withCanvas {
-            drawRect(Rect.makeWH(size.toFloat(), size.toFloat()), Paint().apply { color = bg })
-            drawImage(layer1.resize(-700 * scale, -700 * scale, true), margin + 4F * scale, margin + 4F * scale)
-            drawImage(layer2.resize(-800 * scale, -800 * scale, true), margin.toFloat(), margin.toFloat())
-        }
-        call.respondBytes(result.bytes(format = EncodedImageFormat.PNG), ContentType.Image.PNG)
     }
 
     staticResources("/", "public") {
