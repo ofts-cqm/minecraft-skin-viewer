@@ -2,13 +2,11 @@ package top.e404.skin.jfx.view
 
 import javafx.scene.Scene
 import javafx.scene.layout.Pane
-import javafx.scene.layout.StackPane
 import javafx.stage.Stage
 import org.jetbrains.skia.AnimationDisposalMode
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.ColorAlphaType
 import top.e404.skiko.gif.gif
-import top.e404.skin.jfx.SkinCanvas
 import kotlin.math.PI
 
 abstract class AbstractView<T> (val imageWidth: Double, val imageHeight: Double, protected val pane: Pane){

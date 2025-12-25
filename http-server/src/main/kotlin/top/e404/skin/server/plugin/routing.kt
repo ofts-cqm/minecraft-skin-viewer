@@ -12,12 +12,11 @@ import org.jetbrains.skia.*
 import org.slf4j.LoggerFactory
 import top.e404.skiko.gif.gif
 import top.e404.skin.jfx.CanvasArgs
-import top.e404.skin.jfx.view.AbstractView
 import top.e404.skin.jfx.view.HeadView
 import top.e404.skin.jfx.view.HipView
 import top.e404.skin.jfx.view.SkinView
 import top.e404.skin.jfx.view.SneakView
-import top.e404.skin.jfx.view.AbstractView.Companion.asGIF;
+import top.e404.skin.jfx.view.AbstractView.Companion.asGIF
 import top.e404.skin.jfx.view.GroupView
 import top.e404.skin.server.ConfigManager
 import top.e404.skin.server.RateLimiter

@@ -1,6 +1,5 @@
 package top.e404.skin.jfx.view
 
-import javafx.scene.control.Skin
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.AnchorPane

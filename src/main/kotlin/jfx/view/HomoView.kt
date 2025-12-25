@@ -42,6 +42,7 @@ object HomoView {
         }
     }
 
+    @Deprecated("replaced", ReplaceWith("GroupView.homo.getGroupPhoto"))
     fun getHomo(
         bytes: ByteArray,
         slim: Boolean,
