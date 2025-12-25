@@ -1,6 +1,7 @@
 package top.e404.skin.jfx.view
 
 import javafx.scene.image.Image
+import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.transform.Rotate
 import javafx.scene.transform.Translate
@@ -11,7 +12,7 @@ import top.e404.skin.jfx.runTask
 import top.e404.skin.jfx.snapshot
 import kotlin.math.sin
 
-object HipView: AbstractView<SkinCanvas>(600.0, 900.0) {
+object HipView: AbstractView<SkinCanvas>(600.0, 900.0, StackPane()) {
     private fun update(image: Image, slim: Boolean, light: Color?, head: Double) {
         pane.children.apply {
             clear()

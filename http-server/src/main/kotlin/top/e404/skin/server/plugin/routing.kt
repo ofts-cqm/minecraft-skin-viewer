@@ -12,12 +12,13 @@ import org.jetbrains.skia.*
 import org.slf4j.LoggerFactory
 import top.e404.skiko.gif.gif
 import top.e404.skin.jfx.CanvasArgs
+import top.e404.skin.jfx.view.AbstractView
 import top.e404.skin.jfx.view.HeadView
 import top.e404.skin.jfx.view.HipView
-import top.e404.skin.jfx.view.HomoView
 import top.e404.skin.jfx.view.SkinView
 import top.e404.skin.jfx.view.SneakView
-import top.e404.skin.jfx.view.asGIF
+import top.e404.skin.jfx.view.AbstractView.Companion.asGIF;
+import top.e404.skin.jfx.view.GroupView
 import top.e404.skin.server.ConfigManager
 import top.e404.skin.server.RateLimiter
 import top.e404.skin.server.Skin
@@ -140,7 +141,27 @@ fun Application.routing() = routing {
             }
 
             "homo" -> {
-                val bytes = HomoView.getHomo(skinBytes, data.slim, light, parameters["head"]?.toDoubleOrNull() ?: 1.0)
+                val bytes = GroupView.homo.getGroupPhoto(args)
+                call.respondBytes(bytes, ContentType.Image.PNG)
+            }
+
+            "trump" -> {
+                val bytes = GroupView.trump.getGroupPhoto(args)
+                call.respondBytes(bytes, ContentType.Image.PNG)
+            }
+
+            "milano" -> {
+                val bytes = GroupView.milano.getGroupPhoto(args)
+                call.respondBytes(bytes, ContentType.Image.PNG)
+            }
+
+            "temple" -> {
+                val bytes = GroupView.temple.getGroupPhoto(args)
+                call.respondBytes(bytes, ContentType.Image.PNG)
+            }
+
+            "gwall" -> {
+                val bytes = GroupView.gWall.getGroupPhoto(args)
                 call.respondBytes(bytes, ContentType.Image.PNG)
             }
 

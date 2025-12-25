@@ -11,6 +11,7 @@ import top.e404.skin.jfx.png
 import top.e404.skin.jfx.runTask
 import top.e404.skin.jfx.snapshot
 
+@Deprecated("Refactored as GroupView", ReplaceWith("GroupView.homo", "import top.e404.skin.jfx.view.GroupView"))
 object HomoView {
     private const val w = 500.0
     private const val h = 889.0
