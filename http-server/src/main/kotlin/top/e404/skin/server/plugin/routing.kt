@@ -164,6 +164,11 @@ fun Application.routing() = routing {
                 call.respondBytes(bytes, ContentType.Image.PNG)
             }
 
+            "318" -> {
+                val bytes = GroupView.liTang.getGroupPhoto(args)
+                call.respondBytes(bytes, ContentType.Image.PNG)
+            }
+
             "hip" -> {
                 val bytes = asGIF(HipView.getHipShake(args), HipView.imageWidth.toInt(), HipView.imageHeight.toInt(), d)
                 call.respondBytes(bytes, ContentType.Image.GIF)

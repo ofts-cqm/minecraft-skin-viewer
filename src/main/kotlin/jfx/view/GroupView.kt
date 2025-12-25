@@ -15,21 +15,36 @@ class GroupView(imageHeight: Double, imageWidth: Double, val resourceName: Strin
         val allGroupViews = arrayListOf<GroupView>()
 
         val homo = GroupView(500.0, 889.0, "homo.jpg") { canvas -> canvas.homo() }
-        val trump = GroupView(1200.0, 800.0, "trump.jpg") { canvas -> trump(canvas) }
+        val trump = GroupView(800.0, 1000.0, "trump.png") { canvas -> trump(canvas) }
         val milano = GroupView(720.0, 1280.0, "milano.jpg") { canvas -> milano(canvas) }
         val temple = GroupView(720.0, 1280.0, "temple.jpg") { canvas -> temple(canvas) }
         val gWall = GroupView(800.0, 1449.0, "gWall.jpg") { canvas -> temple(canvas) }
+        val liTang = GroupView(900.0, 1200.0, "318.png") { canvas -> liTang(canvas) }
 
         fun loadAll(){
             allGroupViews.forEach { it.load() }
         }
 
-        fun temple(canvas: SkinCanvas){
+        fun liTang(canvas: SkinCanvas){
             canvas.apply {
-                xRotate.angle = -10.0
+                xRotate.angle = -15.0
                 yRotate.angle = .0
                 zRotate.angle = .0
-                translate.y -= 30
+                translate.x = -7.0
+                translate.y -= 15
+                scale.apply {
+                    x = 1.5
+                    y = 1.5
+                }
+            }
+        }
+
+        fun temple(canvas: SkinCanvas){
+            canvas.apply {
+                xRotate.angle = -15.0
+                yRotate.angle = .0
+                zRotate.angle = .0
+                translate.y -= 35
                 scale.apply {
                     x = 2.5
                     y = 2.5
@@ -52,14 +67,14 @@ class GroupView(imageHeight: Double, imageWidth: Double, val resourceName: Strin
 
         fun trump(canvas: SkinCanvas){
             canvas.apply {
-                xRotate.angle = .0
-                yRotate.angle = -30.0
+                xRotate.angle = -5.0
+                yRotate.angle = .0
                 zRotate.angle = .0
-                translate.x = -7.0
-                translate.y = -2.0
+                translate.x = -10.0
+                translate.y = -6.0
                 scale.apply {
-                    x = 0.9
-                    y = 0.9
+                    x = 1.0
+                    y = 1.0
                 }
             }
         }
