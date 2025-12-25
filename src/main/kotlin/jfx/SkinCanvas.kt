@@ -173,6 +173,25 @@ class SkinCanvas(
         }
     }
 
+    fun hipWave(left: Rotate, right:Rotate, bodyShift: Translate){
+        lLeg.transforms.add(left)
+        lLeg.translateY -= 0.6
+        rLeg.transforms.add(right)
+        rLeg.translateY -= 0.6
+        yRotate.angle = 10.0
+        body.translateZ -= 0.5
+
+        head.transforms.add(bodyShift)
+        body.transforms.add(bodyShift)
+        lArm.transforms.add(bodyShift)
+        rArm.transforms.add(bodyShift)
+
+        lArm.transforms.add(Rotate(-10.0, Rotate.Z_AXIS))
+        lArm.transforms.add(Translate(0.75, 0.0))
+        rArm.transforms.add(Rotate(10.0, Rotate.Z_AXIS))
+        rArm.transforms.add(Translate(-0.75, 0.0))
+    }
+
     fun sneak() {
         root.translateZ += 3
         xRotate.angle = 10.0

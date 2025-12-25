@@ -11,11 +11,13 @@ import javafx.scene.paint.Color
 import org.jetbrains.skia.*
 import org.slf4j.LoggerFactory
 import top.e404.skiko.gif.gif
-import top.e404.skiko.util.*
+import top.e404.skin.jfx.CanvasArgs
 import top.e404.skin.jfx.view.HeadView
+import top.e404.skin.jfx.view.HipView
 import top.e404.skin.jfx.view.HomoView
 import top.e404.skin.jfx.view.SkinView
 import top.e404.skin.jfx.view.SneakView
+import top.e404.skin.jfx.view.asGIF
 import top.e404.skin.server.ConfigManager
 import top.e404.skin.server.RateLimiter
 import top.e404.skin.server.Skin
@@ -43,9 +45,17 @@ fun Application.routing() = routing {
         val parameters = call.request.queryParameters
         val bg = parameters["bg"]?.runCatching { Color.web(this) }?.getOrNull() ?: defaultBgColor
         val light = parameters["light"]?.let { Color.web(it) }
+        val slim = parameters["t"]?.toBoolean() ?: data.slim
+        val frameCount = parameters["x"]?.toIntOrNull() ?: 20
+        val pitch = parameters["y"]?.toIntOrNull() ?: 20
+        val head = parameters["head"]?.toDoubleOrNull() ?: 1.0
+        val d = (parameters["duration"]?.toIntOrNull() ?: 40).coerceAtLeast(20)
+
+        val args = CanvasArgs(skinBytes, slim, bg, frameCount, pitch, light, head)
+
         when (call.parameters["position"]!!.lowercase()) {
             "sneak" -> {
-                val slim = parameters["t"]?.toBoolean() ?: data.slim
+
                 val (first, second) = SneakView.getSneak(
                     skinBytes,
                     slim,
@@ -134,6 +144,11 @@ fun Application.routing() = routing {
                 call.respondBytes(bytes, ContentType.Image.PNG)
             }
 
+            "hip" -> {
+                val bytes = asGIF(HipView.getHipShake(args), HipView.imageWidth.toInt(), HipView.imageHeight.toInt(), d)
+                call.respondBytes(bytes, ContentType.Image.GIF)
+            }
+
             else -> call.respond(HttpStatusCode.NotFound)
         }
     }
@@ -148,51 +163,6 @@ fun Application.routing() = routing {
             }
         }
         call.respond(if (success) HttpStatusCode.OK else HttpStatusCode.NotFound)
-    }
-
-    get("/data/{type}/{content}") {
-        val data = when (call.parameters["type"]!!.lowercase()) {
-            "id" -> Skin.getById(call.parameters["content"]!!)
-            "name" -> Skin.getByName(call.parameters["content"]!!)
-            else -> {
-                call.respond(HttpStatusCode.BadRequest, "type must be 'id' or 'name'")
-                return@get
-            }
-        }
-        if (data == null) {
-            call.respond(HttpStatusCode.NotFound)
-            return@get
-        }
-        call.respond(data)
-    }
-
-    get("/face/{type}/{content}") {
-        val data = when (call.parameters["type"]!!.lowercase()) {
-            "id" -> Skin.getById(call.parameters["content"]!!)
-            "name" -> Skin.getByName(call.parameters["content"]!!)
-            else -> {
-                call.respond(HttpStatusCode.BadRequest, "type must be 'id' or 'name'")
-                return@get
-            }
-        }
-        if (data == null) {
-            call.respond(HttpStatusCode.NotFound)
-            return@get
-        }
-        val image = Image.makeFromEncoded(data.skinBytes)
-        val layer1 = image.sub(8, 8, 8, 8)
-        val layer2 = image.sub(40, 8, 8, 8)
-        val parameters = call.request.queryParameters
-        val bg = parameters["bg"]?.asColor() ?: 0
-        val scale = parameters["scale"]?.toIntOrNull() ?: 5
-        val margin = parameters["margin"]?.toIntOrNull() ?: 40
-        val size = 64 * scale + 2 * margin
-        val result = Surface.makeRasterN32Premul(size, size).withCanvas {
-            drawRect(Rect.makeWH(size.toFloat(), size.toFloat()), Paint().apply { color = bg })
-            drawImage(layer1.resize(-700 * scale, -700 * scale, true), margin + 4F * scale, margin + 4F * scale)
-            drawImage(layer2.resize(-800 * scale, -800 * scale, true), margin.toFloat(), margin.toFloat())
-        }
-        call.respondBytes(result.bytes(format = EncodedImageFormat.PNG), ContentType.Image.PNG)
     }
 
     staticResources("/", "public") {

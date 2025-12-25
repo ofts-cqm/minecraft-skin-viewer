@@ -44,6 +44,7 @@ class SkinApp : Application() {
         HeadView.load()
         HomoView.load()
         SneakView.load()
+        HipView.load()
         afterLoad.invoke(this)
     }
 
