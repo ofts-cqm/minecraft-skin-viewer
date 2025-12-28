@@ -42,9 +42,10 @@ class SkinApp : Application() {
         stage.isResizable = false
         app = this
         HeadView.load()
-        HomoView.load()
+        //HomoView.load()
         SneakView.load()
         HipView.load()
+        GroupView.loadAll()
         afterLoad.invoke(this)
     }
 
