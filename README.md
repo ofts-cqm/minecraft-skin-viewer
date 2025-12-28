@@ -1,6 +1,26 @@
 # minecraft-skin-viewer
 
-用于生成我的世界玩家渲染图
+中文翻译位于下面
+
+This repository is a minecraft skin animation generator, and also the host program of a website using it. It was initially a fork from 404E's [Minecraft Skin Viewer](https://github.com/4o4E/minecraft-skin-viewer). 
+
+Upon Aayong's request, I created a website featuring skin-animation generation, using the upstream repository mentioned above as the API source. 
+
+However, due to the complexity of Aayong's requirement, I forked this repository to add some new generation options to adopt Aayong's tasks. I also packaged the website together and used this program to serve the static webpage. 
+
+Therefore, it is no longer the same as the original repository. 
+
+-----
+
+English Translations are Above
+
+这个仓库是一个我的世界皮肤动画生成器，以及一个网站的host。它原本是404E的[Minecraft Skin Viewer](https://github.com/4o4E/minecraft-skin-viewer)的一个fork。
+
+根据Aayong的要求，我制作了一个网站，用于在线创作各种皮肤动图，并使用以上的仓库作为API。
+
+然而，因为Aayong要求的复杂性，我fork了以上仓库并添加了新的生成项目，来完成Aayong的目标。我还将我制作的网站一并打包了进去，并使用这个程序serve static我的网站
+
+因此，这个仓库已经和原本的不一样了
 
 ## http服务
 
@@ -11,12 +31,15 @@
 1. 此http服务使用mysql来储存玩家`uuid`和`name`, 请在部署后配置db.properties, 默认使用名为`skin`的数据库
 2. `config.yml`可以设置http服务的地址和端口, 以及代理(用于从mojang的服务器获取玩家数据, 没有可以留空)
 3. 对于linux, 此应用需要`xserver`, 你可以使用`gnome`/`kde`/`xvfb`, 另外我自己在`ubuntu`上使用的时候, 需要添加`-Dprism.forceGPU=true`以及`-Djdk.gtk.version=3`
+4. 您可能需要在db.properties的jdbcurl中加入allowPublicKeyRetrieval=true参数来使用mysql server
 
 ### 使用
 
 1. 安装11或更高版本的[java](https://adoptium.net/)以及[mysql](https://downloads.mysql.com/archives/community/)
 2. 从[release](https://github.com/4o4E/minecraft-skin-viewer/releases/latest)下载对应操作系统的jar文件
 3. 在控制台中使用`java -jar http-server-${plateform}.jar`启动服务
+4. 根据“api接口”章节的内容来使用该API，或者：
+5. 打开https:localhost:2345 （默认）来使用网站
 
 ### 示例配置文件
 
@@ -45,7 +68,7 @@ url: `/render/{type}/{content}/{position}`
 |----------|-----------|------------------------------------------|
 | type     | 以何种方式指定玩家 | `name`/`id`                              |
 | content  | 指定玩家的内容   | `玩家名`/`uuid`                             |
-| position | 生成的模式     | `sneak`/`sk`/`dsk`/`head`/`dhead`/`homo` |
+| position | 生成的模式     | `sneak`/`hip`/`sk`/`dsk`/`head`/`dhead`/`homo`/`temple`/`trump`/`litang` |
 
 **获取渲染图时不同模式的可用参数(打勾的参数意味支持get参数设置)**
 
@@ -65,29 +88,6 @@ url: `/render/{type}/{content}/{position}`
 
 ```http request
 GET http://localhost:2345/render/name/404E/sk?head=1.5
-```
-
-#### 通过皮肤生成头像
-
-url: `/facr/{type}/{content}`
-
-| url参数    | 含义        | 示例                                       |
-|----------|-----------|------------------------------------------|
-| type     | 以何种方式指定玩家 | `name`/`id`                              |
-| content  | 指定玩家的内容   | `玩家名`/`uuid`                             |
-
-**获取头像时的可用参数(打勾的参数意味支持get参数设置)**
-
-| 请求参数     | 含义     | 默认值     |
-|----------|--------|---------|
-| bg       | 背景颜色   | `#0000` |
-| scale    | 头像缩放倍率 | `5`     |
-| margin   | 头像边距   | `40`    |
-
-**示例请求**
-
-```http request
-GET http://localhost:2345/face/name/404E?bg=%23ffff&scale=5&margin=40
 ```
 
 #### 刷新皮肤缓存
