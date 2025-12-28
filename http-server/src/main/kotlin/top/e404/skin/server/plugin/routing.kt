@@ -164,7 +164,7 @@ fun Application.routing() = routing {
                 call.respondBytes(bytes, ContentType.Image.PNG)
             }
 
-            "318" -> {
+            "litang" -> {
                 val bytes = GroupView.liTang.getGroupPhoto(args)
                 call.respondBytes(bytes, ContentType.Image.PNG)
             }

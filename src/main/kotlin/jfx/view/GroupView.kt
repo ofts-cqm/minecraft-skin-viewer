@@ -27,11 +27,11 @@ class GroupView(imageHeight: Double, imageWidth: Double, val resourceName: Strin
 
         fun liTang(canvas: SkinCanvas){
             canvas.apply {
-                xRotate.angle = -15.0
+                xRotate.angle = -10.0
                 yRotate.angle = .0
                 zRotate.angle = .0
                 translate.x = -7.0
-                translate.y -= 15
+                translate.y -= 13
                 scale.apply {
                     x = 1.5
                     y = 1.5
