@@ -15,7 +15,7 @@ javafx {
     // another option is to use:
     // modules = listOf("javafx.controls", "javafx.fxml")
 
-    version = "12.0.1" // or whatever version you're using
+    version = "21.0.2"//"12.0.1" // or whatever version you're using
 }
 
 repositories {

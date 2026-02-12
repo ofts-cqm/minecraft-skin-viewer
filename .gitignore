@@ -10,3 +10,6 @@ jar
 latest.log
 config.yml
 */*.png
+.DS_Store
+db.properties
+skin/
