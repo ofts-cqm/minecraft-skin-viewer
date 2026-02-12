@@ -48,7 +48,7 @@ class SkinCanvas(
     private val rLegInner = SkinCube(4, 12, 4, zoom, 0, 16, skin)
     private val rLegOuter = SkinCube(4, 12, 4, outerZoom, 0, 32, skin)
 
-    private val head = SkinGroup(
+    val head = SkinGroup(
         Rotate(0.0, 0.0, headInner.height / 2.0, 0.0, Rotate.X_AXIS),
         Rotate(0.0, Rotate.Y_AXIS),
         Rotate(0.0, 0.0, headInner.height / 2.0, 0.0, Rotate.Z_AXIS),
@@ -60,7 +60,7 @@ class SkinCanvas(
             it.scaleZ *= headScale
         }
     }
-    private val body = SkinGroup(
+    val body = SkinGroup(
         Rotate(0.0, Rotate.X_AXIS),
         Rotate(0.0, Rotate.Y_AXIS),
         Rotate(0.0, Rotate.Z_AXIS),

@@ -17,6 +17,7 @@ import top.e404.skin.jfx.view.HipView
 import top.e404.skin.jfx.view.SkinView
 import top.e404.skin.jfx.view.SneakView
 import top.e404.skin.jfx.view.AbstractView.Companion.asGIF
+import top.e404.skin.jfx.view.DeathView
 import top.e404.skin.jfx.view.GroupView
 import top.e404.skin.server.ConfigManager
 import top.e404.skin.server.RateLimiter
@@ -171,6 +172,11 @@ fun Application.routing() = routing {
 
             "hip" -> {
                 val bytes = asGIF(HipView.getHipShake(args), HipView.imageWidth.toInt(), HipView.imageHeight.toInt(), d)
+                call.respondBytes(bytes, ContentType.Image.GIF)
+            }
+
+            "death" -> {
+                val bytes = asGIF(DeathView.getDeath(args), DeathView.imageWidth.toInt(), DeathView.imageHeight.toInt(), d)
                 call.respondBytes(bytes, ContentType.Image.GIF)
             }
 

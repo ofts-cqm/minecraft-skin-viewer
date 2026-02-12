@@ -45,6 +45,7 @@ class SkinApp : Application() {
         //HomoView.load()
         SneakView.load()
         HipView.load()
+        DeathView.load()
         GroupView.loadAll()
         afterLoad.invoke(this)
     }
